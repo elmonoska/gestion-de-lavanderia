@@ -1,5 +1,5 @@
 // app
-export const APP_NAME = 'la esponjita';
+export const APP_NAME = 'Demo Gestion de Lavanderia';
 export const APP_SCHEMA = import.meta.env.VITE_APP_SCHEMA as "la_esponjita_laundry";
 export const AUTHOR_NAME = "ElMonoSka";
 export const START_DEV_YEAR = 2025;
