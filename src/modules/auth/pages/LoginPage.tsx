@@ -4,11 +4,8 @@ import supabase from "../utils/supabase";
 import InputMessage from "../../../components/ui/InputMessage";
 import { useState } from "react";
 import { USER_FORM_RULES } from "../../../constants/auth";
-
-type LoginForm = {
-  email: string;
-  password: string;
-};
+import type { LoginForm } from "../../../types/auth";
+import InputPassword from "../../../components/ui/InputPassword";
 
 export default function LoginPage() {
   // ESTADOS
@@ -48,6 +45,8 @@ export default function LoginPage() {
                 <legend className="uppercase font-bold text-center">
                   login
                 </legend>
+
+                {/* EMAIL */}
                 <div className="">
                   <label
                     htmlFor="email"
@@ -71,6 +70,7 @@ export default function LoginPage() {
                   )}
                 </div>
 
+                {/* CONTRASEÑA */}
                 <div className="">
                   <label
                     htmlFor="current-password"
@@ -78,13 +78,7 @@ export default function LoginPage() {
                   >
                     contraseña:{" "}
                   </label>
-                  <input
-                    type="password"
-                    id="current-password"
-                    placeholder={USER_FORM_RULES.password.placeholder}
-                    className="w-full"
-                    {...register("password", USER_FORM_RULES.password)}
-                  />
+                  <InputPassword register={register} />
 
                   <Link
                     className="cursor-pointer text-sm text-sky-600 font-medium hover:text-sky-700 transition-colors inline-block w-full mt-2 underline text-end"
@@ -101,7 +95,7 @@ export default function LoginPage() {
                     />
                   )}
                 </div>
-
+                
                 {errorForm && (
                   <InputMessage message={errorForm} capitalize error />
                 )}

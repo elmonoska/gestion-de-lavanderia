@@ -4,12 +4,8 @@ import supabase from "../utils/supabase";
 import { toast } from "react-toastify";
 import InputMessage from "../../../components/ui/InputMessage";
 import { USER_FORM_RULES } from "../../../constants/auth";
-
-type SignupForm = {
-  name: string;
-  email: string;
-  password: string;
-};
+import type { SignupForm } from "../../../types/auth";
+import InputPassword from "../../../components/ui/InputPassword";
 
 export default function SignupPage() {
   // hooks
@@ -58,6 +54,7 @@ export default function SignupPage() {
                 crear cuenta
               </legend>
 
+              {/* NOMBRE */}
               <div className="">
                 <label
                   htmlFor="name"
@@ -81,6 +78,7 @@ export default function SignupPage() {
                 )}
               </div>
 
+              {/* EMAIL */}
               <div className="">
                 <label
                   htmlFor="email"
@@ -104,6 +102,7 @@ export default function SignupPage() {
                 )}
               </div>
 
+              {/* CONTRASEÑA */}
               <div className="">
                 <label
                   htmlFor="new-password"
@@ -111,14 +110,7 @@ export default function SignupPage() {
                 >
                   contraseña:{" "}
                 </label>
-                <input
-                  type="password"
-                  id="new-password"
-                  autoComplete="new-password"
-                  className="w-full"
-                  placeholder={USER_FORM_RULES.password.placeholder}
-                  {...register("password", USER_FORM_RULES.password)}
-                />
+                <InputPassword register={register} />
                 {errors.password && (
                   <InputMessage
                     capitalize

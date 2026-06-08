@@ -3,11 +3,8 @@ import supabase from "../utils/supabase";
 import { toast } from "react-toastify";
 import InputMessage from "../../../components/ui/InputMessage";
 import { useNavigate } from "react-router-dom";
-import { USER_FORM_RULES } from "../../../constants/auth";
-
-type UpdateForm = {
-  password: string;
-}
+import type { UpdateForm } from "../../../types/auth";
+import InputPassword from "../../../components/ui/InputPassword";
 
 export default function UpdatePasswordPage() {
   // HOOKS
@@ -38,16 +35,10 @@ export default function UpdatePasswordPage() {
           <div className="">
             <form className="flex flex-col max-w-sm gap-4" onSubmit={handleSubmit(updatePassword)}>
               <fieldset className="">
+                {/* NUEVA CONTRASEÑA */}
                 <div className="">
                   <label htmlFor="password" className="capitalize">cambiar contraseña: </label>
-                  <input
-                    type="password"
-                    id="password"
-                    className="w-full"
-                    placeholder={USER_FORM_RULES.password.placeholder}
-                    {...register("password", USER_FORM_RULES.password)}
-                    disabled={isSubmitting}
-                  />
+                  <InputPassword register={register} />
                   {errors.password && <InputMessage message={errors.password.message} capitalize error />}
                 </div>
               </fieldset>

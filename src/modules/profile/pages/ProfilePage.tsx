@@ -7,6 +7,7 @@ import supabase from "../../auth/utils/supabase";
 import { toast } from "react-toastify";
 import type { UserAttributes } from "@supabase/supabase-js";
 import { USER_FORM_RULES } from "../../../constants/auth";
+import InputPassword from "../../../components/ui/InputPassword";
 
 type ProfileForm = {
   name: string;
@@ -104,16 +105,10 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* CONTRASEÑA */}
+            {/* NUEVA CONTRASEÑA */}
             <div className="">
               <label htmlFor="new-password" className="capitalize">nueva contraseña: </label>
-              <input
-                type="password"
-                id="new-password"
-                className="w-full" 
-                placeholder={USER_FORM_RULES.newPassword.placeholder}
-                {...register("newPassword", USER_FORM_RULES.newPassword)}
-              />
+              <InputPassword register={register} isCurrent={false} />
             </div>
           </fieldset>
           <input

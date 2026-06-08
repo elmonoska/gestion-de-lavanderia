@@ -3,10 +3,7 @@ import supabase from "../utils/supabase";
 import { toast } from "react-toastify";
 import InputMessage from "../../../components/ui/InputMessage";
 import { USER_FORM_RULES } from "../../../constants/auth";
-
-type ForgotForm = {
-  email: string;
-}
+import type { ForgotForm } from "../../../types/auth";
 
 // crear la url absoluta para redirigir al cambio de contraseña
 const redirectUrl = `${window.location.origin}/cambiar-contraseña`;
@@ -38,6 +35,7 @@ export default function ForgotPasswordPage() {
             <form className="flex flex-col max-w-sm gap-4" onSubmit={handleSubmit(sendEmail)}>
               <fieldset className="flex flex-col">
 
+                {/* EMAIL */}
                 <div className="">
                   <label htmlFor="email" className="capitalize">correo electronico: </label>
                   <input
