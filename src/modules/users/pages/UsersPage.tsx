@@ -38,7 +38,7 @@ export default function UsersPage() {
             type="search"
             id="search"
             className="grow w-full md:w-auto placeholder:capitalize bg-white"
-            placeholder="buscar servicio"
+            placeholder="buscar usuario"
             onChange={searchUser}
           />
           <div className="">

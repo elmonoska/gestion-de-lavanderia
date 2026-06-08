@@ -39,7 +39,7 @@ export default function NotesPage() {
             type="search"
             id="search"
             className="grow w-full md:w-auto placeholder:capitalize bg-white"
-            placeholder="buscar servicio"
+            placeholder="buscar nota"
             onChange={handleChangeSearch}
           />
           <select className="bg-white capitalize" onChange={handleChangeStatus} value={status}>

@@ -41,7 +41,7 @@ export default function ServiceSelector() {
       )}
 
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-evenly">
         <input
           type="number"
           inputMode="numeric"

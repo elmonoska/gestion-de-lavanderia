@@ -32,7 +32,7 @@ export default function NavBar() {
         <FaBars className="cursor-pointer text-3xl" title="abrir menu" onClick={toggleMenu} />
         <aside className={`fixed bg-black/80 inset-0 ${backMenuCondition} transition-all duration-300 flex justify-end text-black`} onClick={toggleMenu}>
           <nav className={`w-3/4 bg-slate-100 h-dvh p-4 flex flex-col gap-4 ${menuCondition} transition-all duration-300`} onClick={e=> e.stopPropagation()}>
-            <FaTimes className="cursor-pointer self-end text-3xl" title="cerrar menu" onClick={toggleMenu} />
+            <FaTimes className="cursor-pointer self-end text-3xl text-red-500" title="cerrar menu" onClick={toggleMenu} />
 
             <UserCard
               userName={userProfile?.name ||  "usuario"}

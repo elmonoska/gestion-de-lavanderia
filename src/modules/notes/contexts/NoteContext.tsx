@@ -9,7 +9,6 @@ import {
   updateNoteWithServices,
 } from "../../../api/note";
 import { useAuth } from "../../auth/hooks/useAuth";
-import { formatDateForSupabase } from "../../../utils/date";
 import { getNoteServicesByNoteId } from "../../../api/noteService";
 import { normalizeNumber } from "../../../utils/number";
 import { normalizeText } from "../../../utils/text";
@@ -276,7 +275,6 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
         id: editingNote.id,
         updated_by_id: userProfile.id,
         updated_by_name: userProfile.name,
-        updated_at: formatDateForSupabase(new Date()),
         aditional_payments: normalizedAditionalPayments,
         status,
         created_by_id: editingNote.created_by_id,

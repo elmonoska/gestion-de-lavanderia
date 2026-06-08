@@ -105,7 +105,6 @@ export type Database = {
       notes_services: {
         Row: {
           created_at: string
-          discount: number
           id: string
           note_id: string
           quantity: number
@@ -116,7 +115,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          discount?: number
           id?: string
           note_id: string
           quantity: number
@@ -127,7 +125,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          discount?: number
           id?: string
           note_id?: string
           quantity?: number
