@@ -180,7 +180,7 @@ export default function NoteModal({ isOpen, onClose }: NoteModalProps) {
             </div>
           </fieldset>
 
-          <fieldset className="flex flex-col gap-2">
+          <fieldset className="flex flex-col gap-2 min-w-0">
             {/* AGREGACION DE SERVICIOS */}
             <ServiceSelector />
 

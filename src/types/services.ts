@@ -12,16 +12,13 @@ export type PromoRulesJson = {
   percent?: number;
 }
 
-export type SelectedService = Pick<
-  Service,
-  "unit" | "has_promo" | "promo_type" | "promo_rules"
-> &
-  Pick<
+export type SelectedService = Pick<Service, "unit"> 
+  & Pick<
     NoteService,
-    | "discount"
     | "quantity"
     | "service_id"
     | "service_name"
     | "total"
     | "unit_price"
-  > & { note_id?: NoteService["id"]; subTotal: number };
+  > 
+  & { note_id?: NoteService["id"]};

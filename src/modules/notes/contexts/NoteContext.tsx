@@ -1,7 +1,6 @@
 import { createContext, useMemo, useRef, type ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchActiveServices } from "../../../api/services";
-import { calculateServiceAmount } from "../../../utils/money";
 import { toast } from "react-toastify";
 import {
   createNoteWithServices,
@@ -39,7 +38,9 @@ type NoteContextProps = {
   // LISTADO DE SERVICIOS
   selectedServiceId: string;
   handleChangeServiceId: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  quantityService: string | number;
+  serviceTotal: string | number;
+  handleChangeServiceTotal: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  serviceQuantity: string | number;
   handleChangeServiceQuantity: (e: React.ChangeEvent<HTMLInputElement>) => void;
   availableServices: Service[];
   selectedServices: SelectedService[];
@@ -53,11 +54,13 @@ type NoteContextProps = {
 type NoteModalErrorMessages = {
   serviceIdError: string;
   serviceQuantityError: string;
+  serviceTotalError: string;
 };
 
 const initialErrors: NoteModalErrorMessages = {
   serviceIdError: "",
   serviceQuantityError: "",
+  serviceTotalError: "",
 };
 
 type NoteProviderProps = {
@@ -89,7 +92,8 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
    * LISTADO DE SERVICIOS
    */
   const [selectedServiceId, setSelectedServiceId] = useState("");
-  const [quantityService, setQuantityService] = useState("");
+  const [serviceQuantity, setServiceQuantity] = useState("");
+  const [serviceTotal, setServiceTotal] = useState("");
   const [activeServices, setActiveServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>(
     [],
@@ -256,28 +260,9 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
       total: totalToPaid,
     };
 
-    const services: NewNoteService[] = selectedServices.map(
-      ({
-        service_id,
-        service_name,
-        quantity,
-        unit_price,
-        discount,
-        subTotal,
-      }) => ({
-        service_id,
-        service_name,
-        quantity,
-        unit_price,
-        discount,
-        total: subTotal,
-      }),
-    );
-
+    // si se actualiza una nota
     if (editingNote) {
-      const normalizedAditionalPayments = normalizeNumber(
-        dataForm.aditional_payments,
-      );
+      const normalizedAditionalPayments = normalizeNumber(dataForm.aditional_payments);
       const totalPaid = normalizedDeposit + normalizedAditionalPayments;
 
       let status = dataForm.status ?? "";
@@ -297,7 +282,9 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
         created_by_id: editingNote.created_by_id,
         created_by_name: editingNote.created_by_name,
       };
-      updateNote(notePayload, services);
+      updateNote(notePayload, selectedServices);
+
+      // si se crea una nota
     } else {
       const notePayload = {
         ...baseNote,
@@ -308,7 +295,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
             ? NOTE_STATUS.PAID
             : NOTE_STATUS.PENDING_PAYMENT,
       };
-      createNote(notePayload, services);
+      createNote(notePayload, selectedServices);
     }
   };
 
@@ -344,20 +331,14 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
 
     setSelectedServices([]);
 
+    // crea un mapa con la informacion de un servicio disponible en base a su id
+    const servicesMap = Object.fromEntries(availableServices.map(service => [service.id, service]))
+    
     const normalizeNoteServices = responseNoteServices
       .map(
-        ({
-          service_id,
-          discount,
-          quantity,
-          service_name,
-          total,
-          unit_price,
-          note_id,
-        }) => {
-          const findService = availableServices.find(
-            (service) => service.id === service_id,
-          );
+        (service) => {
+
+          const findService = servicesMap[service.service_id];
           if (!findService) {
             console.error(
               "El servicio de la nota no se encuentra en la lista de servicios activos",
@@ -365,18 +346,13 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
             return;
           }
           return {
-            has_promo: findService.has_promo,
-            promo_rules: findService.promo_rules,
-            promo_type: findService.promo_type,
-            quantity,
-            service_id,
-            service_name,
-            subTotal: total,
-            discount,
-            total: total - discount,
+            service_id: service.service_id,
+            service_name: service.service_name,
+            quantity: service.quantity,
+            total: service.total,
             unit: findService.unit,
-            unit_price,
-            note_id,
+            unit_price: service.unit_price,
+            note_id: service.note_id,
           };
         },
       )
@@ -396,17 +372,16 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
   }
 
   // cambia la cantidad del servicio seleccionado
-  const handleChangeServiceQuantity = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-     setQuantityService(e.currentTarget.value);
-  }
+  const handleChangeServiceQuantity = (e: React.ChangeEvent<HTMLInputElement>) => setServiceQuantity(e.currentTarget.value)
+
+  // cambia el total del servicio seleccionado
+  const handleChangeServiceTotal = (e: React.ChangeEvent<HTMLInputElement>) => setServiceTotal(e.currentTarget.value)
 
   // resetea los estados de los servicios
   const resetStatesServices = useCallback(() => {
     setEditingNote(null);
     setSelectedServiceId("");
-    setQuantityService("");
+    setServiceTotal("");
     setSelectedServices([]);
     setErrorMessages(initialErrors);
   }, []);
@@ -417,9 +392,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     setErrorMessages(initialErrors);
 
     // valida si el servicio seleccionado existe en los servicios activos
-    const findService = availableServices?.find(
-      (service) => service.id === selectedServiceId,
-    );
+    const findService = availableServices?.find((service) => service.id === selectedServiceId);
     if (!findService) {
       hasError = true;
       setErrorMessages((prev) => ({
@@ -429,26 +402,29 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     }
 
     // valida la cantidad del servicio
-    if (
-      !quantityService ||
-      Number(quantityService) <= 0 ||
-      Number(quantityService) >= 999
-    ) {
+    if (!serviceQuantity || Number(serviceQuantity) <= 0 || Number(serviceQuantity) >= 999) {
       hasError = true;
       setErrorMessages((prev) => ({
         ...prev,
         serviceQuantityError: "La cantidad debe ser entre 1 y 998",
       }));
     }
+
+    // valida el total del servicio
+    if (!serviceTotal || Number(serviceTotal) <= 0 || Number(serviceTotal) >= 99_999) {
+      hasError = true;
+      setErrorMessages((prev) => ({
+        ...prev,
+        serviceTotalError: "El total debe ser entre 1 y 99,999",
+      }));
+    }
     // si hubo errores no agrega el servicio a la lista de servicios seleccionados
     if (hasError || !findService) return;
 
-    const { id, price, promo_type, promo_rules, has_promo, unit } = findService;
+    const { id, price, unit } = findService;
 
     // valida si el servicio seleccionado ya se encuentra en la lista de servicios seleccionados
-    const serviceExists = selectedServices.some(
-      (service) => service.service_id === selectedServiceId,
-    );
+    const serviceExists = selectedServices.some((service) => service.service_id === selectedServiceId);
     if (serviceExists) {
       setErrorMessages((prev) => ({
         ...prev,
@@ -457,32 +433,22 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
       return;
     }
 
-    const { total, discount, subTotal } = calculateServiceAmount(
-      Number(quantityService),
-      price,
-      promo_rules,
-      promo_type,
-    );
+    // construye el servicio que se va añadir
+    const newService = {
+      quantity: Number(serviceQuantity),
+      service_id: id,
+      service_name: findService.name,
+      total: Number(serviceTotal),
+      unit_price: price,
+      unit,
+    }
+    // añade el servicio
+    setSelectedServices((prev) => [...prev, newService]);
 
-    setSelectedServices((prev) => [
-      ...prev,
-      {
-        discount,
-        quantity: Number(quantityService),
-        service_id: id,
-        service_name: findService.name,
-        total,
-        unit_price: price,
-        has_promo,
-        promo_rules,
-        promo_type,
-        unit,
-        subTotal,
-      },
-    ]);
-
+    // limpia los estados para permitir agregar uno nuevo en blanco
     setSelectedServiceId("");
-    setQuantityService("");
+    setServiceQuantity("");
+    setServiceTotal("");
     setErrorMessages(initialErrors);
   };
 
@@ -528,8 +494,10 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     // LISTADO DE SERVICIOS
     selectedServiceId,
     handleChangeServiceId,
-    quantityService,
+    serviceQuantity,
     handleChangeServiceQuantity,
+    serviceTotal,
+    handleChangeServiceTotal,
     availableServices,
     selectedServices,
     errorMessages,

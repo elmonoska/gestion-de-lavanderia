@@ -1,4 +1,3 @@
-import { FaPlus } from "react-icons/fa";
 import InputMessage from "../../../components/ui/InputMessage";
 import { moneyFormat } from "../../../utils/money";
 import { getPromoLabel } from "../../../utils/text";
@@ -10,15 +9,17 @@ export default function ServiceSelector() {
     handleChangeServiceId,
     selectedServiceId,
     errorMessages,
-    quantityService,
+    serviceQuantity,
     handleChangeServiceQuantity,
+    serviceTotal,
+    handleChangeServiceTotal,
     addService,
     availableServices,
   } = useNoteServices();
 
   // VISTA
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-3">
       <select
         className="first-letter:uppercase w-full"
         onChange={handleChangeServiceId}
@@ -38,24 +39,45 @@ export default function ServiceSelector() {
       {errorMessages.serviceIdError && (
         <InputMessage message={errorMessages.serviceIdError} capitalize error />
       )}
-      <input
-        type="number"
-        inputMode="numeric"
-        className="placeholder:capitalize grow"
-        placeholder="cantidad"
-        value={quantityService}
-        onChange={handleChangeServiceQuantity}
-      />
+
+
+      <div className="flex gap-2">
+        <input
+          type="number"
+          inputMode="numeric"
+          className="placeholder:capitalize min-w-0"
+          placeholder="cantidad"
+          value={serviceQuantity}
+          onChange={handleChangeServiceQuantity}
+        />
+        <input
+          type="number"
+          inputMode="numeric"
+          className="placeholder:capitalize min-w-0"
+          placeholder="total"
+          value={serviceTotal}
+          onChange={handleChangeServiceTotal}
+        />
+      </div>
+
       <button
         type="button"
-        className="btn-primary rounded-full! shrink-0"
+        className="uppercase p-2 rounded-md w-3/4 mx-auto border border-blue-500 text-blue-500"
         onClick={addService}
       >
-        <FaPlus size={20} />
+        añadir servicio
       </button>
+
       {errorMessages.serviceQuantityError && (
         <InputMessage
           message={errorMessages.serviceQuantityError}
+          capitalize
+          error
+        />
+      )}
+      {errorMessages.serviceTotalError && (
+        <InputMessage
+          message={errorMessages.serviceTotalError}
           capitalize
           error
         />

@@ -5,8 +5,10 @@ const useNoteServices = () => {
   const {
     selectedServiceId,
     handleChangeServiceId,
-    quantityService,
+    serviceQuantity,
     handleChangeServiceQuantity,
+    serviceTotal,
+    handleChangeServiceTotal,
     availableServices,
     selectedServices,
     errorMessages,
@@ -18,8 +20,10 @@ const useNoteServices = () => {
   return {
     selectedServiceId,
     handleChangeServiceId,
-    quantityService,
+    serviceQuantity,
     handleChangeServiceQuantity,
+    serviceTotal,
+    handleChangeServiceTotal,
     availableServices,
     selectedServices,
     errorMessages,
