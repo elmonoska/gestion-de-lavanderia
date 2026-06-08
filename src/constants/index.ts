@@ -1,6 +1,7 @@
 // app
-export const APP_NAME = 'Demo Gestion de Lavanderia';
+export const APP_NAME = import.meta.env.VITE_APP_NAME;
 export const APP_SCHEMA = import.meta.env.VITE_APP_SCHEMA as "la_esponjita_laundry";
+export const BUSINESS_NAME = import.meta.env.VITE_BUSINESS_NAME;
 export const AUTHOR_NAME = "ElMonoSka";
 export const START_DEV_YEAR = 2025;
 export const ITEMS_PER_PAGE = 5;

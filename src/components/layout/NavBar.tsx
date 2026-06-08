@@ -3,7 +3,7 @@ import { useAuth } from "../../modules/auth/hooks/useAuth"
 import { APP_MENU } from "../../config/Menu";
 import { Link } from "react-router-dom";
 import { FaTimes, FaBars } from "react-icons/fa";
-import { APP_NAME } from "../../constants";
+import { BUSINESS_NAME } from "../../constants";
 import UserCard from "./UserCard";
 
 
@@ -28,7 +28,7 @@ export default function NavBar() {
   return (
     <>
       <header className="sticky top-0 z-30 flex justify-around items-center p-4 text-white bg-sky-400 mb-4 shadow-md">
-        <h1 className="uppercase font-bold text-xl md:text-2xl"><Link to="/">{APP_NAME}</Link></h1>
+        <h1 className="uppercase font-bold text-xl md:text-2xl"><Link to="/">{BUSINESS_NAME}</Link></h1>
         <FaBars className="cursor-pointer text-3xl" title="abrir menu" onClick={toggleMenu} />
         <aside className={`fixed bg-black/80 inset-0 ${backMenuCondition} transition-all duration-300 flex justify-end text-black`} onClick={toggleMenu}>
           <nav className={`w-3/4 bg-slate-100 h-dvh p-4 flex flex-col gap-4 ${menuCondition} transition-all duration-300`} onClick={e=> e.stopPropagation()}>
