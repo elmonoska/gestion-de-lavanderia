@@ -6,6 +6,7 @@ import {
   createNoteWithServices,
   fetchNotes,
   toggleNoteActive,
+  updateNoteStatusById,
   updateNoteWithServices,
 } from "../../../api/note";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -28,6 +29,7 @@ type NoteContextProps = {
   toggleNote: (id: Note["id"], active: Note["active"]) => void;
   editNote: (note: Note) => void;
   getMoreNotes: () => void;
+  markNoteAsPaid: (note: Note) => void;
   // MODAL
   isNoteModalOpen: boolean;
   openModal: () => void;
@@ -180,6 +182,47 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     }
   }, [searchNote, showInactives, status]);
 
+  // desactiva o activa una nota
+  const toggleNote = useCallback(
+    async (id: Note["id"], active: Note["active"]) => {
+      if (!userProfile) return;
+      const data = await toggleNoteActive(
+        id,
+        active,
+        userProfile?.id,
+        userProfile.name,
+      );
+      if (!data) {
+        toast.error("Ocurrio un error al eliminar la nota");
+        return;
+      }
+      toast.success("La nota se elimino correctamente");
+      setNotes((prev) =>
+        prev.map((note) => (note.id === data.id ? data : note)),
+      );
+    },
+    [userProfile],
+  );
+
+  // marca una nota como pagada en base a su id
+  const markNoteAsPaid = async (note: Note) => {
+    const totalPaid = note.deposit + note.aditional_payments;
+    const remaining = note.total - totalPaid;
+    const newAditionalPayment = remaining + note.aditional_payments;
+    try {
+      const data = await updateNoteStatusById(note.id, newAditionalPayment);
+      if (!data) {
+        toast.error('Ocurrio un error al actualizar la nota');
+        return;
+      }
+
+      toast.success('La nota se marco como pagada');
+      setNotes(prev => prev.map(note => note.id === data.id ? data : note));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   // obtiene las notas cuando los filtros cambian despues de 1sg
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -296,28 +339,6 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
       createNote(notePayload, selectedServices);
     }
   };
-
-  // desactiva o activa una nota
-  const toggleNote = useCallback(
-    async (id: Note["id"], active: Note["active"]) => {
-      if (!userProfile) return;
-      const data = await toggleNoteActive(
-        id,
-        active,
-        userProfile?.id,
-        userProfile.name,
-      );
-      if (!data) {
-        toast.error("Ocurrio un error al eliminar la nota");
-        return;
-      }
-      toast.success("La nota se elimino correctamente");
-      setNotes((prev) =>
-        prev.map((note) => (note.id === data.id ? data : note)),
-      );
-    },
-    [userProfile],
-  );
 
   // establece la nota que se va editar y obtiene sus servicios
   const editNote = async (note: Note) => {
@@ -483,6 +504,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     toggleNote,
     editNote,
     getMoreNotes,
+    markNoteAsPaid,
     // MODAL
     isNoteModalOpen,
     openModal,

@@ -1,4 +1,4 @@
-import { NOTE_STATUS_LABELS, NOTE_STATUS_STYLES } from "../../../constants/notes";
+import { NOTE_STATUS, NOTE_STATUS_LABELS, NOTE_STATUS_STYLES } from "../../../constants/notes";
 import type { Note } from "../../../types/notes";
 import { formatDateToDDMMYYHHMM } from "../../../utils/date";
 import { moneyFormat } from "../../../utils/money";
@@ -10,13 +10,14 @@ type NoteItemProps = {
 };
 
 export default function NoteItem({ note }: NoteItemProps) {
+  // HOOKS
+  const { toggleNote, editNote, markNoteAsPaid } = useNote();
+  const { userProfile } = useAuth();
+
   // DERIVADOS
   const totalPaid = note.deposit + note.aditional_payments;
   const remaining = Math.max(note.total - totalPaid, 0);
-
-  // HOOKS
-  const { toggleNote, editNote } = useNote();
-  const { userProfile } = useAuth();
+  const canMarkAsPaid = userProfile?.rol === 'admin' && note.active && note.status === NOTE_STATUS.PENDING_PAYMENT;
 
   // VISTA
   return (
@@ -112,7 +113,7 @@ export default function NoteItem({ note }: NoteItemProps) {
       </div>
 
       {/* acciones */}
-      <div className="flex justify-between gap-4 *:w-full *:py-2 *:rounded-md *:capitalize *:border *:font-semibold *:text-xs">
+      <div className="flex gap-4 flex-wrap *:flex-1 *:w-full *:p-2 *:rounded-md *:capitalize *:border *:font-semibold *:text-xs">
         {note.active && (
           <button
             type="button"
@@ -130,6 +131,16 @@ export default function NoteItem({ note }: NoteItemProps) {
             onClick={() => toggleNote(note.id, note.active)}
           >
             {note.active ? "eliminar" : "activar"}
+          </button>
+        )}
+
+        {canMarkAsPaid &&  (
+          <button 
+            type="button"
+            className="min-w-full capitalize bg-blue-50 border border-blue-500 text-blue-500"
+            onClick={() => markNoteAsPaid(note)}
+          >
+            marcar pagada
           </button>
         )}
       </div>

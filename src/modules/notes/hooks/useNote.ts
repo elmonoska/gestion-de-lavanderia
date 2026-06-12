@@ -13,6 +13,7 @@ const useNote = () => {
     toggleNote,
     editNote,
     getMoreNotes,
+    markNoteAsPaid,
   } = useContext(NoteContext);
   return {
     notes,
@@ -25,6 +26,7 @@ const useNote = () => {
     toggleNote,
     editNote,
     getMoreNotes,
+    markNoteAsPaid,
   };
 };
 export default useNote;

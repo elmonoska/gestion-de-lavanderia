@@ -103,3 +103,23 @@ export const fetchEarnings = async (from: string, to: string) => {
     return null;
   }
 };
+
+export const updateNoteStatusById = async (noteId: Note['id'], newAditionalPayment: Note['aditional_payments']) => {
+  try {
+    const {data, error} = await supabase
+      .from('notes')
+      .update({status: NOTE_STATUS.PAID, aditional_payments: newAditionalPayment})
+      .eq('id', noteId)
+      .select()
+      .single()
+
+    if (error) {
+      return null
+    }
+    return data;
+
+  } catch (err) {
+      console.error(err);
+      return null;
+  }
+}
