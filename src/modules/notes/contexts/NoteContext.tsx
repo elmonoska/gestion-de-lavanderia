@@ -209,18 +209,15 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     const totalPaid = note.deposit + note.aditional_payments;
     const remaining = note.total - totalPaid;
     const newAditionalPayment = remaining + note.aditional_payments;
-    try {
-      const data = await updateNoteStatusById(note.id, newAditionalPayment);
-      if (!data) {
-        toast.error('Ocurrio un error al actualizar la nota');
-        return;
-      }
 
-      toast.success('La nota se marco como pagada');
-      setNotes(prev => prev.map(note => note.id === data.id ? data : note));
-    } catch (err) {
-      console.error(err);
+    const data = await updateNoteStatusById(note.id, newAditionalPayment);
+    if (!data) {
+      toast.error('Ocurrio un error al actualizar la nota');
+      return;
     }
+
+    toast.success('La nota se marco como pagada');
+    setNotes(prev => prev.map(note => note.id === data.id ? data : note));
   }
 
   // obtiene las notas cuando los filtros cambian despues de 1sg
