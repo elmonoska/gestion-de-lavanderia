@@ -4,6 +4,7 @@ import { fetchActiveServices } from "../../../api/services";
 import { toast } from "react-toastify";
 import {
   createNoteWithServices,
+  fetchLastNoteFolio,
   fetchNotes,
   toggleNoteActive,
   updateNoteStatusById,
@@ -36,6 +37,7 @@ type NoteContextProps = {
   closeModal: () => void;
   sendNoteForm: (dataForm: NoteForm) => void;
   editingNote: Note | null;
+  latestFolio: Note['folio'];
   // LISTADO DE SERVICIOS
   selectedServiceId: string;
   handleChangeServiceId: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -89,6 +91,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
    * MODAL
    */
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [latestFolio, setLatestFolio] = useState<Note['folio']>(0);
   /**
    * LISTADO DE SERVICIOS
    */
@@ -241,7 +244,12 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
   };
 
   // abre el modal
-  const openModal = () => {
+  const openModal = async () => {
+    const data = await fetchLastNoteFolio();
+    if (!data) {
+      toast.error('Ocurrio un error al obtener el folio de la última nota');
+    }
+    setLatestFolio(data ?? 0);
     setIsNoteModalOpen(true);
   };
 
@@ -376,7 +384,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
 
     setEditingNote(note);
     setSelectedServices(normalizeNoteServices);
-    openModal();
+    setIsNoteModalOpen(true);
   };
 
   /**
@@ -508,6 +516,7 @@ const NoteProvider = ({ children }: NoteProviderProps) => {
     closeModal,
     sendNoteForm,
     editingNote,
+    latestFolio,
     // LISTADO DE SERVICIOS
     selectedServiceId,
     handleChangeServiceId,

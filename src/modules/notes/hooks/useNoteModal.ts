@@ -8,13 +8,15 @@ const useNoteModal = () => {
     closeModal,
     sendNoteForm,
     editingNote,
+    latestFolio,
   } = useContext(NoteContext);
   return {
     isNoteModalOpen,
     openModal,
     closeModal,
     sendNoteForm,
-    editingNote
+    editingNote,
+    latestFolio,
   };
 };
 export default useNoteModal;

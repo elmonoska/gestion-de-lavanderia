@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import Modal from "../../../components/ui/Modal";
 import InputMessage from "../../../components/ui/InputMessage";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import ServiceSelector from "./ServiceSelector";
 import NotesServicesList from "./NotesServicesList";
 import useNoteModal from "../hooks/useNoteModal";
@@ -15,23 +15,43 @@ type NoteModalProps = {
   onClose: () => void;
 };
 
+const emptyFormValues = {
+  folio: '',
+  client_name: '',
+  client_phone: '',
+  delivery_date: '',
+  delivery_time: '',
+  deposit: '',
+  aditional_payments: '',
+  comments: '',
+  status: '',
+}
+
 export default function NoteModal({ isOpen, onClose }: NoteModalProps) {
   // HOOKS
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid, isSubmitted },
-    reset,
-  } = useForm<NoteForm>({ mode: "onTouched" });
-
-  const { sendNoteForm, editingNote } = useNoteModal();
+  const { sendNoteForm, editingNote, latestFolio } = useNoteModal();
   const { selectedServices, totalToPaid } = useNoteServices();
+
+  const formValues = editingNote
+  ? {
+      folio: String(editingNote.folio),
+      client_name: editingNote.client_name,
+      client_phone: editingNote.client_phone ?? "",
+      delivery_date: editingNote.delivery_date,
+      delivery_time: editingNote.delivery_time,
+      deposit: String(editingNote.deposit),
+      aditional_payments: String(editingNote.aditional_payments),
+      comments: editingNote.comments ?? "",
+      status: editingNote.status,
+  }
+  : {...emptyFormValues, folio: String(latestFolio)};
+
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitted } } = useForm<NoteForm>({ mode: "onTouched", values: formValues});
 
   // MANEJADORES
   const handleClose = useCallback(() => {
-    reset();
     onClose();
-  }, [reset, onClose]);
+  }, [onClose]);
 
 
   // DERIVADOS
@@ -46,41 +66,6 @@ export default function NoteModal({ isOpen, onClose }: NoteModalProps) {
       : "crear";
 
   // EFECTOS
-  // rellena el formulario con la informacion de una nota si se esta editando
-  useEffect(() => {
-    if (editingNote) {
-      reset({
-        folio: String(editingNote.folio),
-        client_name: editingNote.client_name,
-        client_phone: editingNote.client_phone ?? "",
-        delivery_date: editingNote.delivery_date,
-        delivery_time: editingNote.delivery_time,
-        deposit: String(editingNote.deposit),
-        aditional_payments: String(editingNote.aditional_payments),
-        comments: editingNote.comments ?? "",
-        status: editingNote.status,
-      });
-    } else {
-      reset({
-        folio: "",
-        client_name: "",
-        client_phone: "",
-        delivery_date: "",
-        delivery_time: "",
-        deposit: "",
-        aditional_payments: "",
-        comments: "",
-        status: ""
-      });
-    }
-  }, [editingNote, reset]);
-
-  // resetea el formulario cuando se abre el modal
-  useEffect(() => {
-    if (isOpen) {
-      reset();
-    }
-  }, [isOpen, reset]);
 
   // VISTA
   return (

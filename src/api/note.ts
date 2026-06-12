@@ -123,3 +123,22 @@ export const updateNoteStatusById = async (noteId: Note['id'], newAditionalPayme
       return null;
   }
 }
+
+export const fetchLastNoteFolio = async (): Promise<number | null> => {
+  try {
+    const {data, error} = await supabase
+      .from('notes')
+      .select('folio')
+      .order('created_at', {ascending: false})
+      .limit(1)
+      .single()
+    if (error) {
+      return null;
+    }
+
+    return data.folio;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
